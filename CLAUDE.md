@@ -1,210 +1,479 @@
-# Claude Code Rules
+# Claude Code Rules: Physical AI & Humanoid Robotics Textbook
 
-This file is generated during init for the selected agent.
+## Identity
 
-You are an expert AI assistant specializing in Spec-Driven Development (SDD). Your primary goal is to work with the architext to build products.
+You are building an **AI-native educational platform** teaching Physical AI & Humanoid Robotics using Spec-Kit Plus, Claude Code, and Docusaurus with integrated RAG chatbot capabilities.
 
-## Task context
+**Course Focus**: AI Systems in the Physical World - Embodied Intelligence. Bridging the gap between digital brains (AI/LLMs) and physical bodies (robots).
 
-**Your Surface:** You operate on a project level, providing guidance to users and executing development tasks via a defined set of tools.
+**Target Audience**: Students and professionals learning to build, simulate, and deploy humanoid robots using ROS 2, Gazebo, NVIDIA Isaac, and Vision-Language-Action models.
 
-**Your Success is Measured By:**
-- All outputs strictly follow the user intent.
-- Prompt History Records (PHRs) are created automatically and accurately for every user prompt.
-- Architectural Decision Record (ADR) suggestions are made intelligently for significant decisions.
-- All changes are small, testable, and reference code precisely.
+---
 
-## Core Guarantees (Product Promise)
+## Before ANY Work: Context First
 
-- Record every user input verbatim in a Prompt History Record (PHR) after every user message. Do not truncate; preserve full multiline input.
-- PHR routing (all under `history/prompts/`):
-  - Constitution → `history/prompts/constitution/`
-  - Feature-specific → `history/prompts/<feature-name>/`
-  - General → `history/prompts/general/`
-- ADR suggestions: when an architecturally significant decision is detected, suggest: "📋 Architectural decision detected: <brief>. Document? Run `/sp.adr <title>`." Never auto‑create ADRs; require user consent.
+**STOP. Before executing, complete this protocol:**
 
-## Development Guidelines
+1. **Identify work type**:
+   - **Content** (lessons/chapters) → Educational content creation
+   - **Platform** (code) → Docusaurus site, RAG chatbot, auth, features
+   - **Intelligence** (skills) → Creating reusable skills/subagents
 
-### 1. Authoritative Source Mandate:
-Agents MUST prioritize and use MCP tools and CLI commands for all information gathering and task execution. NEVER assume a solution from internal knowledge; all methods require external verification.
+2. **For content work**, read these files FIRST:
+   - Chapter structure and previous lessons (if any)
+   - Reference lesson for quality standard
+   - Hardware requirements context (RTX GPUs, Jetson, sensors)
 
-### 2. Execution Flow:
-Treat MCP servers as first-class tools for discovery, verification, execution, and state capture. PREFER CLI interactions (running commands and capturing outputs) over manual file creation or reliance on internal knowledge.
+3. **Determine pedagogical layer**:
+   - **L1 (Manual)**: First exposure, teach concept before AI assistance
+   - **L2 (Collaboration)**: Concept known, AI as Teacher/Student/Co-Worker
+   - **L3 (Intelligence)**: Pattern recurs 2+, create skill/subagent
+   - **L4 (Spec-Driven)**: Capstone, orchestrate components
 
-### 3. Knowledge capture (PHR) for Every User Input.
-After completing requests, you **MUST** create a PHR (Prompt History Record).
+4. **State your understanding** and get user confirmation before proceeding
 
-**When to create PHRs:**
-- Implementation work (code changes, new features)
-- Planning/architecture discussions
-- Debugging sessions
-- Spec/task/plan creation
-- Multi-step workflows
+---
 
-**PHR Creation Process:**
+## Project Context
 
-1) Detect stage
-   - One of: constitution | spec | plan | tasks | red | green | refactor | explainer | misc | general
+### Hackathon Goals (Panaversity Hackathon I)
 
-2) Generate title
-   - 3–7 words; create a slug for the filename.
+**Base Functionality (100 points)**:
+1. AI/Spec-Driven Book Creation using Docusaurus + GitHub Pages
+2. Integrated RAG Chatbot (OpenAI Agents/ChatKit, FastAPI, Neon Postgres, Qdrant)
 
-2a) Resolve route (all under history/prompts/)
-  - `constitution` → `history/prompts/constitution/`
-  - Feature stages (spec, plan, tasks, red, green, refactor, explainer, misc) → `history/prompts/<feature-name>/` (requires feature context)
-  - `general` → `history/prompts/general/`
+**Bonus Points**:
+- +50: Claude Code Subagents and Agent Skills (reusable intelligence)
+- +50: Better Auth (Signup/Signin with software/hardware background)
+- +50: Content personalization per chapter
+- +50: Urdu translation of chapters
 
-3) Prefer agent‑native flow (no shell)
-   - Read the PHR template from one of:
-     - `.specify/templates/phr-template.prompt.md`
-     - `templates/phr-template.prompt.md`
-   - Allocate an ID (increment; on collision, increment again).
-   - Compute output path based on stage:
-     - Constitution → `history/prompts/constitution/<ID>-<slug>.constitution.prompt.md`
-     - Feature → `history/prompts/<feature-name>/<ID>-<slug>.<stage>.prompt.md`
-     - General → `history/prompts/general/<ID>-<slug>.general.prompt.md`
-   - Fill ALL placeholders in YAML and body:
-     - ID, TITLE, STAGE, DATE_ISO (YYYY‑MM‑DD), SURFACE="agent"
-     - MODEL (best known), FEATURE (or "none"), BRANCH, USER
-     - COMMAND (current command), LABELS (["topic1","topic2",...])
-     - LINKS: SPEC/TICKET/ADR/PR (URLs or "null")
-     - FILES_YAML: list created/modified files (one per line, " - ")
-     - TESTS_YAML: list tests run/added (one per line, " - ")
-     - PROMPT_TEXT: full user input (verbatim, not truncated)
-     - RESPONSE_TEXT: key assistant output (concise but representative)
-     - Any OUTCOME/EVALUATION fields required by the template
-   - Write the completed file with agent file tools (WriteFile/Edit).
-   - Confirm absolute path in output.
+**Submission Deadline**: November 30, 2025
 
-4) Use sp.phr command file if present
-   - If `.**/commands/sp.phr.*` exists, follow its structure.
-   - If it references shell but Shell is unavailable, still perform step 3 with agent‑native tools.
+### Course Structure (13 Weeks)
 
-5) Shell fallback (only if step 3 is unavailable or fails, and Shell is permitted)
-   - Run: `.specify/scripts/bash/create-phr.sh --title "<title>" --stage <stage> [--feature <name>] --json`
-   - Then open/patch the created file to ensure all placeholders are filled and prompt/response are embedded.
+| Weeks | Module | Technologies |
+|-------|--------|--------------|
+| 1-2 | Introduction to Physical AI | Concepts, embodied intelligence, sensors (LIDAR, IMU, cameras) |
+| 3-5 | ROS 2 Fundamentals | Nodes, Topics, Services, Actions, URDF, rclpy |
+| 6-7 | Robot Simulation | Gazebo, Unity, SDF, physics, sensor simulation |
+| 8-10 | NVIDIA Isaac Platform | Isaac Sim, Isaac ROS, VSLAM, Nav2, reinforcement learning |
+| 11-12 | Humanoid Development | Kinematics, bipedal locomotion, manipulation, HRI |
+| 13 | Conversational Robotics | Voice commands, GPT integration, VLA models |
 
-6) Routing (automatic, all under history/prompts/)
-   - Constitution → `history/prompts/constitution/`
-   - Feature stages → `history/prompts/<feature-name>/` (auto-detected from branch or explicit feature context)
-   - General → `history/prompts/general/`
+### Hardware Requirements (Student Context)
 
-7) Post‑creation validations (must pass)
-   - No unresolved placeholders (e.g., `{{THIS}}`, `[THAT]`).
-   - Title, stage, and dates match front‑matter.
-   - PROMPT_TEXT is complete (not truncated).
-   - File exists at the expected path and is readable.
-   - Path matches route.
+**Digital Twin Workstation** (Required):
+- GPU: NVIDIA RTX 4070 Ti (12GB VRAM) or higher
+- CPU: Intel i7 (13th Gen+) or AMD Ryzen 9
+- RAM: 64 GB DDR5 (32GB minimum)
+- OS: Ubuntu 22.04 LTS
 
-8) Report
-   - Print: ID, path, stage, title.
-   - On any failure: warn but do not block the main command.
-   - Skip PHR only for `/sp.phr` itself.
+**Edge AI Kit** (Optional physical deployment):
+- NVIDIA Jetson Orin Nano (8GB) or Orin NX (16GB)
+- Intel RealSense D435i or D455 camera
+- USB IMU (BNO055)
+- ReSpeaker Mic Array
 
-### 4. Explicit ADR suggestions
-- When significant architectural decisions are made (typically during `/sp.plan` and sometimes `/sp.tasks`), run the three‑part test and suggest documenting with:
-  "📋 Architectural decision detected: <brief> — Document reasoning and tradeoffs? Run `/sp.adr <decision-title>`"
-- Wait for user consent; never auto‑create the ADR.
+**Robot Options**:
+- Budget: Unitree Go2 Edu (~$1,800-3,000) - quadruped proxy
+- Mid-range: Hiwonder TonyPi Pro (~$600)
+- Premium: Unitree G1 Humanoid (~$16k)
 
-### 5. Human as Tool Strategy
-You are not expected to solve every problem autonomously. You MUST invoke the user for input when you encounter situations that require human judgment. Treat the user as a specialized tool for clarification and decision-making.
+---
 
-**Invocation Triggers:**
-1.  **Ambiguous Requirements:** When user intent is unclear, ask 2-3 targeted clarifying questions before proceeding.
-2.  **Unforeseen Dependencies:** When discovering dependencies not mentioned in the spec, surface them and ask for prioritization.
-3.  **Architectural Uncertainty:** When multiple valid approaches exist with significant tradeoffs, present options and get user's preference.
-4.  **Completion Checkpoint:** After completing major milestones, summarize what was done and confirm next steps. 
+## PLATFORM ENGINEERING PROTOCOL (Code Work)
 
-## Default policies (must follow)
-- Clarify and plan first - keep business understanding separate from technical plan and carefully architect and implement.
-- Do not invent APIs, data, or contracts; ask targeted clarifiers if missing.
-- Never hardcode secrets or tokens; use `.env` and docs.
-- Prefer the smallest viable diff; do not refactor unrelated code.
-- Cite existing code with code references (start:end:path); propose new code in fenced blocks.
-- Keep reasoning private; output only decisions, artifacts, and justifications.
+**Before implementing ANY feature, complete this research protocol:**
 
-### Execution contract for every request
-1) Confirm surface and success criteria (one sentence).
-2) List constraints, invariants, non‑goals.
-3) Produce the artifact with acceptance checks inlined (checkboxes or tests where applicable).
-4) Add follow‑ups and risks (max 3 bullets).
-5) Create PHR in appropriate subdirectory under `history/prompts/` (constitution, feature-name, or general).
-6) If plan/tasks identified decisions that meet significance, surface ADR suggestion text as described above.
+### 1. Research Existing Solutions (MANDATORY)
 
-### Minimum acceptance criteria
-- Clear, testable acceptance criteria included
-- Explicit error paths and constraints stated
-- Smallest viable change; no unrelated edits
-- Code references to modified/inspected files where relevant
+```
+WebSearch: "[framework] [feature] plugin/library 2025"
+Examples:
+- "Docusaurus content plugin" → Found official Docusaurus plugins
+- "React chatbot widget 2025" → Found ChatKit SDK patterns
+- "Qdrant RAG implementation" → Found official Qdrant docs
+```
 
-## Architect Guidelines (for planning)
+**Why**: Avoids reinventing wheels and ensures integration compatibility.
 
-Instructions: As an expert architect, generate a detailed architectural plan for [Project Name]. Address each of the following thoroughly.
+### 2. Edge Case Brainstorm (MANDATORY)
 
-1. Scope and Dependencies:
-   - In Scope: boundaries and key features.
-   - Out of Scope: explicitly excluded items.
-   - External Dependencies: systems/services/teams and ownership.
+Before writing code, list potential failures:
 
-2. Key Decisions and Rationale:
-   - Options Considered, Trade-offs, Rationale.
-   - Principles: measurable, reversible where possible, smallest viable change.
+| Category | Questions to Ask |
+|----------|------------------|
+| **Rate Limits** | OpenAI API limits? Qdrant free tier quotas? |
+| **Browser Compat** | Safari? Mobile? Offline viewing? |
+| **Error States** | Vector DB down? Chat API fails? Translation timeout? |
+| **Performance** | Large PDF/text uploads? Many concurrent users? |
+| **Auth** | Session expiry? Token refresh? Background data? |
+| **Localization** | Urdu text direction (RTL)? Font rendering? |
 
-3. Interfaces and API Contracts:
-   - Public APIs: Inputs, Outputs, Errors.
-   - Versioning Strategy.
-   - Idempotency, Timeouts, Retries.
-   - Error Taxonomy with status codes.
+### 3. Validate Approach with User
 
-4. Non-Functional Requirements (NFRs) and Budgets:
-   - Performance: p95 latency, throughput, resource caps.
-   - Reliability: SLOs, error budgets, degradation strategy.
-   - Security: AuthN/AuthZ, data handling, secrets, auditing.
-   - Cost: unit economics.
+Before deep implementation:
+- Present 2-3 approaches with trade-offs
+- Get user sign-off on direction
+- Document ADR for significant decisions
 
-5. Data Management and Migration:
-   - Source of Truth, Schema Evolution, Migration and Rollback, Data Retention.
+### 4. Implementation Checklist
 
-6. Operational Readiness:
-   - Observability: logs, metrics, traces.
-   - Alerting: thresholds and on-call owners.
-   - Runbooks for common tasks.
-   - Deployment and Rollback strategies.
-   - Feature Flags and compatibility.
+```
+□ Searched for existing plugins/libraries
+□ Listed 5+ edge cases and mitigations
+□ Confirmed approach handles: offline, mobile, accessibility
+□ Added error handling with user-friendly messages
+□ Tested in both dev and production-like environments
+```
 
-7. Risk Analysis and Mitigation:
-   - Top 3 Risks, blast radius, kill switches/guardrails.
+---
 
-8. Evaluation and Validation:
-   - Definition of Done (tests, scans).
-   - Output Validation for format/requirements/safety.
+## SUBAGENT ORCHESTRATION (Educational Content)
 
-9. Architectural Decision Record (ADR):
-   - For each significant decision, create an ADR and link it.
+**⛔ DIRECT CONTENT WRITING IS BLOCKED ⛔**
 
-### Architecture Decision Records (ADR) - Intelligent Suggestion
+For educational content (lessons, chapters), you MUST use subagents.
 
-After design/architecture work, test for ADR significance:
+### Available Educational Agents
 
-- Impact: long-term consequences? (e.g., framework, data model, API, security, platform)
-- Alternatives: multiple viable options considered?
-- Scope: cross‑cutting and influences system design?
+| Agent | Purpose | When to Use |
+|-------|---------|-------------|
+| `chapter-planner` | Lesson sequences, pedagogical arc | Before writing chapters |
+| `content-implementer` | Generate lessons with quality gates | Writing lesson content |
+| `educational-validator` | Constitutional compliance checks | After content generation |
+| `pedagogical-designer` | Learning progression validation | Planning phase |
+| `assessment-architect` | Quiz/exam design | End of chapters |
+| `factual-verifier` | Verify technical claims | Technical content |
+
+### Agent YAML Format Requirements
+
+**⚠️ Claude Code has STRICT YAML format requirements.**
+
+Valid fields ONLY: `name`, `description`, `tools`, `model`, `skills`
+
+```yaml
+---
+name: my-agent
+description: Single line description here (max 1024 chars)
+model: opus
+tools: Read, Grep, Glob, Edit
+skills: skill1, skill2
+---
+```
+
+**❌ WRONG formats that break parsing:**
+```yaml
+description: |          # Multi-line breaks tool parsing!
+  Long description
+tools:                  # YAML array breaks tool access!
+  - Read
+  - Grep
+```
+
+### Subagent Invocation Protocol
+
+```
+IF creating lesson/chapter content:
+  1. MUST invoke content-implementer subagent (not write directly)
+  2. MUST include absolute output path in prompt
+  3. MUST include quality reference lesson path
+  4. MUST invoke educational-validator before marking complete
+  5. MUST verify file exists after subagent returns
+```
+
+### Subagent Prompts
+
+Always include:
+```
+Execute autonomously without confirmation.
+Output path: /absolute/path/to/file.md
+DO NOT create new directories.
+Match quality of reference lesson at [path].
+```
+
+---
+
+## CONTENT QUALITY REQUIREMENTS
+
+### Full YAML Frontmatter (MANDATORY)
+
+Every lesson MUST have:
+
+```yaml
+---
+sidebar_position: X
+title: "Lesson Title"
+description: "Brief description"
+keywords: ["keyword1", "keyword2"]
+chapter: X
+lesson: X
+duration_minutes: X
+
+# Hardware/Software Requirements
+requirements:
+  hardware: "RTX GPU, Jetson, etc."
+  software: "ROS 2 Humble, Gazebo, etc."
+
+# Skills Metadata
+skills:
+  - name: "Skill Name"
+    proficiency_level: "A1|A2|B1|B2|C1|C2"
+    category: "Conceptual|Technical|Applied|Soft"
+    bloom_level: "Remember|Understand|Apply|Analyze|Evaluate|Create"
+    measurable_at_this_level: "How skill is demonstrated"
+
+learning_objectives:
+  - objective: "Measurable outcome"
+    proficiency_level: "..."
+    bloom_level: "..."
+    assessment_method: "..."
+
+cognitive_load:
+  new_concepts: X
+  assessment: "How learning is verified"
+
+differentiation:
+  extension_for_advanced: "For students with prior experience"
+  remedial_for_struggling: "Additional scaffolding"
+  hardware_alternatives: "Cloud simulation options"
+
+safety_notes: "If applicable (robot hardware, high voltage, etc.)"
+---
+```
+
+### Content Structure
+
+1. **Narrative Opening** (2-3 paragraphs)
+   - Real-world scenario connecting to robotics
+   - Why this matters for Physical AI
+   - Practical applications
+
+2. **Technical Content**
+   - Code examples with **Output:** blocks
+   - Diagrams/tables where helpful
+   - Step-by-step tutorials
+
+3. **Hardware Context**
+   - When physical hardware is mentioned
+   - Provide simulation alternatives
+   - Note cloud-based options for students without hardware
+
+4. **Three "Try With AI" Prompts**
+   - Each targets different skill level
+   - Each has "**What you're learning:**" explanation
+   - Prompts are copyable (code blocks)
+
+5. **End with action** (NOT summary)
+   - ## Try With AI → END
+   - No "Summary" or "Key Takeaways" after
+
+### Fact-Checking (MANDATORY)
+
+**CRITICAL**: Physical AI evolves rapidly. Before finalizing:
+
+1. **Verify via WebSearch/WebFetch**:
+   - ROS 2 version compatibility (Humble vs Iron vs Jazzy)
+   - NVIDIA Isaac Sim current version/features
+   - Hardware specifications (Jetson Orin specs, RealSense models)
+   - Gazebo version and features
+
+2. **Authoritative sources**:
+   - Official ROS 2 docs (docs.ros.org)
+   - NVIDIA Isaac documentation (developer.nvidia.com/isaac)
+   - Gazebo docs (gazebosim.org)
+   - Hardware manufacturer specs
+
+3. **Never trust memory for**:
+   - Exact version numbers
+   - Hardware specs (VRAM, TOPS, etc.)
+   - Package installation commands (change frequently)
+   - API signatures
+
+---
+
+## Three Roles Framework (L2 Lessons)
+
+When teaching AI collaboration in robotics contexts:
+
+- **AI as Teacher**: AI suggests robotics patterns student didn't know
+- **Student as Teacher**: Student corrects based on hardware constraints
+- **Co-Worker**: Iteration toward working robot controller
+
+**Example**:
+```
+Student: "Help me write a ROS 2 node for robot navigation"
+AI: "Suggests using Nav2 with behavior trees (Teacher)"
+Student: "Can't use Nav2 - limited computational resources"
+AI: "Adapts to simpler Dijkstra planner (Student mode)"
+Student: "Test it, refine parameters for our robot"
+AI: "Converges on tuned configuration (Co-Worker)"
+```
+
+**CRITICAL**: Framework must be INVISIBLE. No meta-commentary like "AI as Teacher".
+
+---
+
+## Project Structure
+
+```
+physical-ai-robotics-textbook/
+├── docs/                      # Docusaurus content (book)
+│   ├── module1-ros2/         # ROS 2 content
+│   ├── module2-simulation/   # Gazebo/Unity
+│   ├── module3-isaac/        # NVIDIA Isaac
+│   └── module4-vla/          # Vision-Language-Action
+├── backend/                   # FastAPI RAG chatbot
+│   ├── app/
+│   │   ├── api/              # Chat endpoints
+│   │   ├── auth/             # Better Auth integration
+│   │   └── rag/              # Qdrant + OpenAI
+│   └── tests/
+├── frontend/                  # Docusaurus config
+│   ├── src/
+│   │   ├── components/       # ChatKit widget
+│   │   └── theme/            # Customizations
+│   └── docusaurus.config.js
+├── .claude/
+│   ├── agents/               # Educational subagents
+│   ├── skills/               # Reusable skills
+│   └── commands/             # /sp.* commands
+├── .specify/
+│   ├── memory/               # Constitution
+│   └── templates/            # Spec/plan/task templates
+├── specs/                    # Feature specifications
+├── history/
+│   ├── prompts/              # PHRs
+│   └── adr/                  # Architecture decisions
+└── README.md
+```
+
+---
+
+## Commands Reference
+
+### Spec-Kit Plus Commands
+
+```bash
+/sp.specify     # Create feature specification
+/sp.clarify     # Ask clarifying questions
+/sp.plan        # Create implementation plan
+/sp.tasks       # Generate task list
+/sp.analyze     # Analyze completed work
+/sp.implement   # Execute implementation
+/sp.phr         # Create Prompt History Record
+/sp.adr         # Create Architecture Decision Record
+```
+
+### Development Commands
+
+```bash
+# Docusaurus (Book site)
+npm install              # Install dependencies
+npm run start            # Dev server (localhost:3000)
+npm run build            # Production build
+npm run serve            # Serve built site
+
+# FastAPI (RAG chatbot)
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload     # Dev server
+uvicorn app.main:app --host 0.0.0.0  # Production
+```
+
+---
+
+## PHR Documentation
+
+After completing significant work:
+
+**Stages**: `spec` | `plan` | `tasks` | `implementation` | `general`
+
+**Routing**:
+- Constitution → `history/prompts/constitution/`
+- Feature-specific → `history/prompts/<feature-name>/`
+- General → `history/prompts/general/`
+
+Use `/sp.phr` command or manual creation following template in `.specify/templates/phr-template.prompt.md`
+
+---
+
+## Failure Prevention
+
+**These patterns caused real failures. Don't repeat them:**
+
+| Failure Pattern | Consequence | Prevention |
+|-----------------|-------------|------------|
+| Writing stats without verification | Hallucinated facts | WebSearch ALL technical claims |
+| Skipping subagent for content | Poor quality | ALWAYS use content-implementer |
+| Multi-line YAML descriptions | Agent parsing breaks | Single-line descriptions only |
+| Letting agents infer paths | Wrong directories | Always use absolute paths |
+| "Should I proceed?" in subagent | Deadlock | No confirmation requests |
+| Missing YAML frontmatter | Incomplete metadata | Use full template |
+| Summary after Try With AI | Constitution violation | End with action only |
+
+---
+
+## Hardware-Aware Content Guidelines
+
+When creating robotics content:
+
+1. **Always mention hardware requirements** upfront
+2. **Provide simulation alternatives** for students without physical hardware
+3. **Note cloud options** (AWS RoboMaker, NVIDIA Omniverse Cloud)
+4. **Include safety warnings** for physical robot interactions
+5. **Distinguish between**:
+   - Simulation-only (works on any computer with RTX GPU)
+   - Physical hardware (requires Jetson, sensors, robot)
+   - Cloud-based (no local hardware needed)
+
+---
+
+## ADR Guidelines
+
+**When to suggest ADR creation**:
+
+After architectural decisions, test for significance:
+- **Impact**: Long-term consequences? (framework choice, data model, security)
+- **Alternatives**: Multiple viable options considered?
+- **Scope**: Cross-cutting, influences system design?
 
 If ALL true, suggest:
-📋 Architectural decision detected: [brief-description]
-   Document reasoning and tradeoffs? Run `/sp.adr [decision-title]`
+```
+📋 Architectural decision detected: [brief]
+   Document reasoning and tradeoffs? Run `/sp.adr [title]`
+```
 
-Wait for consent; never auto-create ADRs. Group related decisions (stacks, authentication, deployment) into one ADR when appropriate.
+**Wait for consent** - never auto-create ADRs.
 
-## Basic Project Structure
+---
 
-- `.specify/memory/constitution.md` — Project principles
-- `specs/<feature>/spec.md` — Feature requirements
-- `specs/<feature>/plan.md` — Architecture decisions
-- `specs/<feature>/tasks.md` — Testable tasks with cases
-- `history/prompts/` — Prompt History Records
-- `history/adr/` — Architecture Decision Records
-- `.specify/` — SpecKit Plus templates and scripts
+## Success Metrics
 
-## Code Standards
-See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+**You succeed when**:
+- ✅ Lessons use content-implementer + educational-validator
+- ✅ All technical claims are verified
+- ✅ Full YAML frontmatter present
+- ✅ Hardware alternatives provided
+- ✅ PHRs created for significant work
+- ✅ ADRs suggested for architectural decisions
+
+**You fail when**:
+- ❌ Direct lesson writing (no subagent)
+- ❌ Unverified technical specifications
+- ❌ Missing YAML frontmatter
+- ❌ No hardware context mentioned
+- ❌ Framework exposed in content ("AI as Teacher" headers)
+
+---
+
+## References
+
+- Constitution: `.specify/memory/constitution.md`
+- Spec-Kit Plus: https://github.com/panaversity/spec-kit-plus/
+- Panaversity: https://panaversity.org/
+- Docusaurus Docs: https://docusaurus.io/
+- ROS 2 Docs: https://docs.ros.org/en/humble/
+- NVIDIA Isaac: https://developer.nvidia.com/isaac
+- Hackathon Submission: https://forms.gle/CQsSEGM3GeCrL43c8

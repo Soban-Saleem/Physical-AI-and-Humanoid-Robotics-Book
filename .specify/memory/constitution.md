@@ -214,7 +214,7 @@ AI: "Converges on tuned configuration (Co-Worker)"
 
 ### Word Count
 - Lessons: 1,500-3,000 words per lesson
-- Modules: 4 modules total (13 weeks)
+- Modules: 6 modules total (13 weeks) per ADR-002
 - Total book: ~50,000 words estimated
 
 ### Proficiency Progression
@@ -272,4 +272,4 @@ AI: "Converges on tuned configuration (Co-Worker)"
 
 ---
 
-**Version**: 1.0.0 | **Ratified**: 2026-01-13 | **Last Amended**: 2026-01-13
+**Version**: 1.0.0 | **Ratified**: 2025-01-13 | **Last Amended**: 2025-01-13

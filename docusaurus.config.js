@@ -15,13 +15,13 @@ const config = {
     v4: true,
   },
 
-  // Production URL - update with actual GitHub Pages URL
-  url: 'https://your-org.github.io',
-  baseUrl: '/',
+  // Production URL - GitHub Pages
+  url: 'https://soban-saleem.github.io',
+  baseUrl: '/Physical-AI-and-Humanoid-Robotics-Book/',
 
   // GitHub Pages deployment config
-  organizationName: 'your-org', // Update with your GitHub org/user
-  projectName: 'Physical_AI_Humanoid_Robotics_Textbook', // Update with repo name
+  organizationName: 'Soban-Saleem',
+  projectName: 'Physical-AI-and-Humanoid-Robotics-Book',
 
   onBrokenLinks: 'throw',
   markdown: {
@@ -44,7 +44,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          editUrl: 'https://github.com/your-org/Physical_AI_Humanoid_Robotics_Textbook/tree/main/',
+          editUrl: 'https://github.com/Soban-Saleem/Physical-AI-and-Humanoid-Robotics-Book/tree/master/',
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
         },
@@ -54,7 +54,7 @@ const config = {
             type: ['rss', 'atom'],
             xslt: true,
           },
-          editUrl: 'https://github.com/your-org/Physical_AI_Humanoid_Robotics_Textbook/tree/main/',
+          editUrl: 'https://github.com/Soban-Saleem/Physical-AI-and-Humanoid-Robotics-Book/tree/master/',
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -103,7 +103,7 @@ const config = {
           {to: '/docs/intro/prerequisites', label: 'Prerequisites', position: 'left'},
           {to: '/docs/intro/hardware-guide', label: 'Hardware Guide', position: 'left'},
           {
-            href: 'https://github.com/your-org/Physical_AI_Humanoid_Robotics_Textbook',
+            href: 'https://github.com/Soban-Saleem/Physical-AI-and-Humanoid-Robotics-Book',
             label: 'GitHub',
             position: 'right',
           },
@@ -135,7 +135,7 @@ const config = {
               {label: 'Blog', to: '/blog'},
               {
                 label: 'GitHub',
-                href: 'https://github.com/your-org/Physical_AI_Humanoid_Robotics_Textbook',
+                href: 'https://github.com/Soban-Saleem/Physical-AI-and-Humanoid-Robotics-Book',
               },
             ],
           },

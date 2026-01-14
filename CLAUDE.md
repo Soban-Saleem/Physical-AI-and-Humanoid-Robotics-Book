@@ -1,4 +1,4 @@
-# Claude Code Rules: Physical AI & Humanoid Robotics Textbook
+﻿# Claude Code Rules: Physical AI & Humanoid Robotics Textbook
 
 ## Identity
 

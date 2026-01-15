@@ -8,7 +8,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ChatInterface from './ChatInterface';
 import { useTextSelection, isSelectionInContent, getCurrentPageUrl } from './hooks/useTextSelection';
-import type { CitationReference } from '../types';
+import type { CitationReference } from './types';
 
 interface SidebarChatbotProps {
   apiUrl?: string;
@@ -62,26 +62,6 @@ export default function SidebarChatbot({ apiUrl = '/chat' }: SidebarChatbotProps
 
   const handleClose = () => {
     setIsOpen(false);
-  };
-
-  const handleSendMessage = async (question: string, sessionId: string) => {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        question,
-        sessionId,
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to get response');
-    }
-
-    return await response.json();
   };
 
   const handleClearHistory = () => {

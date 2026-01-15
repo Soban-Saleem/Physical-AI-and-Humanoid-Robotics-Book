@@ -46,6 +46,57 @@ const sidebars = {
         'module2-ros2/urdf-and-robot-models',
       ],
     },
+    // Module 3: Robot Simulation (Weeks 6-7)
+    {
+      type: 'category',
+      label: 'Module 3: Robot Simulation',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        'module3-simulation/introduction-to-simulation',
+        'module3-simulation/physics-engines',
+        'module3-simulation/sensor-simulation',
+        'module3-simulation/creating-worlds',
+      ],
+    },
+    // Module 4: NVIDIA Isaac Platform (Weeks 8-10)
+    {
+      type: 'category',
+      label: 'Module 4: NVIDIA Isaac Platform',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        'module4-isaac/isaac-sim-introduction',
+        'module4-isaac/isaac-ros-gpu',
+        'module4-isaac/vslam-navigation',
+        'module4-isaac/reinforcement-learning',
+      ],
+    },
+    // Module 5: Humanoid Development (Weeks 11-12)
+    {
+      type: 'category',
+      label: 'Module 5: Humanoid Development',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        'module5-humanoid/kinematics',
+        'module5-humanoid/bipedal-locomotion',
+        'module5-humanoid/manipulation',
+        'module5-humanoid/human-robot-interaction',
+      ],
+    },
+    // Module 6: Conversational Robotics (Week 13)
+    {
+      type: 'category',
+      label: 'Module 6: Conversational Robotics',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        'module6-conversational/voice-commands',
+        'module6-conversational/gpt-integration',
+        'module6-conversational/vla-models',
+      ],
+    },
     // Appendices - Reference Materials
     {
       type: 'category',

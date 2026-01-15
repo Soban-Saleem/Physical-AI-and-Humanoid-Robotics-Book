@@ -343,6 +343,11 @@ export default function SidebarChatbot({ apiUrl = '/chat' }: SidebarChatbotProps
 }
 
 function getOrCreateSessionId(): string {
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return ''; // Return empty string during SSR
+  }
+
   let sessionId = localStorage.getItem('chatSessionId');
   if (!sessionId) {
     sessionId = crypto.randomUUID?.() || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

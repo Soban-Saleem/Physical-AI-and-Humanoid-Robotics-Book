@@ -44,9 +44,9 @@ class CitationService:
 
             citation = CitationReference(
                 citationId=citation_id,
-                moduleId=result.metadata["module_id"],
-                lessonTitle=result.metadata["lesson_title"],
-                sectionHeading=result.metadata.get("section_heading"),
+                moduleId=result.metadata.module_id,
+                lessonTitle=result.metadata.lesson_title,
+                sectionHeading=result.metadata.section_heading,
                 urlAnchor=self._build_url_anchor(result),
                 relevanceScore=result.score,
             )
@@ -69,14 +69,14 @@ class CitationService:
         Returns:
             URL anchor string
         """
-        base_url = result.metadata["url_anchor"]
+        base_url = result.metadata.url_anchor
 
         # If URL doesn't start with /, prepend it
         if not base_url.startswith("/"):
             base_url = f"/{base_url}"
 
         # Add section anchor if available
-        section = result.metadata.get("section_heading")
+        section = result.metadata.section_heading
         if section:
             # Convert section heading to URL-friendly anchor
             anchor = section.lower().replace(" ", "-").replace("/", "-")

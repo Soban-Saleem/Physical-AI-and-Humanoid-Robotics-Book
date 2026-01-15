@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - 001-textbook-platform
+      - 001-rag-chatbot
   workflow_dispatch:
 
 permissions:

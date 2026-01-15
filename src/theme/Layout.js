@@ -13,7 +13,7 @@ export default function LayoutWrapper(props) {
   // Use production API URL or fall back to local for development
   const apiUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost'
     ? 'http://127.0.0.1:8003/chat'
-    : 'https://api.your-domain.com/chat';  // Replace with your actual VPS domain
+    : 'http://148.230.97.11/chat';  // VPS backend (HTTP only - requires domain for HTTPS)
 
   return (
     <>

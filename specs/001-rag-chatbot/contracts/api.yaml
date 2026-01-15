@@ -1,0 +1,403 @@
+openapi: 3.0.3
+info:
+  title: Physical AI Textbook RAG Chatbot API
+  description: |
+    Backend API for the integrated RAG chatbot. Provides question-answering
+    capabilities using semantic search over textbook content.
+
+    **Base URL**: `https://<backend-url>.railway.app`
+
+    **Authentication**: None (anonymous sessions)
+
+    **Rate Limits**: None enforced (relies on Railway free tier limits)
+  version: 1.0.0
+  contact:
+    name: Physical AI Textbook
+    url: https://github.com/Soban-Saleem/Physical-AI-and-Humanoid-Robotics-Book
+
+servers:
+  - url: http://localhost:8000
+    description: Local development
+  - url: https://rag-chatbot-production.railway.app
+    description: Production (Railway)
+
+tags:
+  - name: chat
+    description: Chat and question-answering endpoints
+  - name: health
+    description: Health check and status endpoints
+
+paths:
+  /chat:
+    post:
+      summary: Ask a question about textbook content
+      description: |
+        Submits a question and receives an AI-generated answer based on
+        indexed textbook content. Returns citations linking to specific
+        lessons and sections.
+      operationId: chat
+      tags: [chat]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            examples:
+              basic_question:
+                summary: Basic question without context
+                value:
+                  question: "What is the difference between LIDAR and IMU?"
+                  session_id: null
+              with_session:
+                summary: Follow-up question in existing conversation
+                value:
+                  question: "What are the limitations of that approach?"
+                  session_id: "550e8400-e29b-41d4-a716-446655440000"
+              with_selection:
+                summary: Question based on selected text
+                value:
+                  question: "Explain this in simpler terms"
+                  session_id: "550e8400-e29b-41d4-a716-446655440000"
+                  selected_text: "Inverse kinematics is the computational problem of finding the joint configurations that achieve a desired end-effector position..."
+                  selected_context:
+                    module_id: "module3-kinematics"
+                    lesson_id: "inverse-kinematics-intro"
+      responses:
+        '200':
+          description: Successful response with answer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+              examples:
+                  with_answer:
+                    summary: Answer found with citations
+                    value:
+                      session_id: "550e8400-e29b-41d4-a716-446655440000"
+                      answer: "LIDAR (Light Detection and Ranging) uses laser pulses to measure distances..."
+                      citations:
+                        - module_id: "module1-intro"
+                          lesson_title: "Sensor Fundamentals"
+                          section_heading: "LIDAR vs IMU"
+                          url_anchor: "#lidar-vs-imu"
+                          relevance_score: 0.92
+                      is_cached: false
+                      tokens_used: 847
+                  not_found:
+                    summary: Topic not covered in textbook
+                    value:
+                      session_id: "550e8400-e29b-41d4-a716-446655440000"
+                      answer: "This topic isn't covered in the textbook. Try asking about sensors, ROS 2 nodes, or robot kinematics."
+                      citations: []
+                      is_cached: false
+                      tokens_used: 156
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/ServiceError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /chat/selection:
+    post:
+      summary: Ask about selected text
+      description: |
+        Submits a question specifically about user-selected text. The answer
+        is constrained to only use the provided text as context.
+      operationId: chatSelection
+      tags: [chat]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatSelectionRequest'
+            examples:
+              basic:
+                summary: Explain selected text
+                value:
+                  question: "Explain this"
+                  selected_text: "The Denavit-Hartenberg parameters provide a standardized way to represent the kinematic structure of a robotic manipulator..."
+                  source:
+                    module_id: "module3-kinematics"
+                    lesson_id: "dh-parameters"
+                    section_id: "parameter-definition"
+      responses:
+        '200':
+          description: Response based on selected text
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+
+  /health:
+    get:
+      summary: Health check
+      description: |
+        Returns service health status including connectivity to
+        external dependencies (Qdrant, OpenAI, Neon).
+      operationId: healthCheck
+      tags: [health]
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                healthy:
+                  summary: All systems operational
+                  value:
+                    status: "healthy"
+                    version: "1.0.0"
+                    dependencies:
+                      qdrant: "connected"
+                      openai: "connected"
+                      neon: "connected"
+                    uptime_seconds: 3600
+                degraded:
+                  summary: One or more dependencies unavailable
+                  value:
+                    status: "degraded"
+                    version: "1.0.0"
+                    dependencies:
+                      qdrant: "connected"
+                      openai: "timeout"
+                      neon: "connected"
+                    uptime_seconds: 3600
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - question
+      properties:
+        question:
+          type: string
+          description: The user's question
+          minLength: 3
+          maxLength: 5000
+          example: "What is the difference between LIDAR and IMU?"
+        session_id:
+          type: string
+          format: uuid
+          description: |
+            Existing session ID for conversation context. Omit for new session.
+          nullable: true
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    ChatSelectionRequest:
+      type: object
+      required:
+        - question
+        - selected_text
+        - source
+      properties:
+        question:
+          type: string
+          description: Question about the selected text
+          minLength: 2
+          maxLength: 1000
+          example: "Explain this in simpler terms"
+        selected_text:
+          type: string
+          description: The text the user has selected
+          minLength: 20
+          maxLength: 5000
+        source:
+          type: object
+          required:
+            - module_id
+            - lesson_id
+          properties:
+            module_id:
+              type: string
+              description: Module folder name
+              example: "module3-kinematics"
+            lesson_id:
+              type: string
+              description: Lesson filename
+              example: "dh-parameters"
+            section_id:
+              type: string
+              description: Section heading slug (if applicable)
+              example: "parameter-definition"
+
+    Citation:
+      type: object
+      required:
+        - module_id
+        - lesson_title
+        - url_anchor
+        - relevance_score
+      properties:
+        citation_id:
+          type: string
+          format: uuid
+          description: Unique citation identifier
+        module_id:
+          type: string
+          description: Module folder name
+          example: "module1-intro"
+        lesson_title:
+          type: string
+          description: Human-readable lesson title
+          example: "Sensor Fundamentals"
+        section_heading:
+          type: string
+          description: Section name or null
+          nullable: true
+          example: "LIDAR vs IMU"
+        url_anchor:
+          type: string
+          description: Fragment identifier for deep linking
+          example: "#lidar-vs-imu"
+        relevance_score:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: Qdrant similarity score
+          example: 0.92
+
+    ChatResponse:
+      type: object
+      required:
+        - session_id
+        - answer
+        - citations
+        - is_cached
+        - tokens_used
+      properties:
+        session_id:
+          type: string
+          format: uuid
+          description: Session ID (new or existing)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        answer:
+          type: string
+          description: AI-generated answer
+          example: "LIDAR uses laser pulses to measure distances, creating 3D point clouds of the environment..."
+        citations:
+          type: array
+          description: Source references for the answer
+          items:
+            $ref: '#/components/schemas/Citation'
+          maxItems: 5
+        is_cached:
+          type: boolean
+          description: Whether the response was retrieved from cache
+        tokens_used:
+          type: integer
+          description: Total API tokens consumed (embedding + generation)
+          example: 847
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - version
+        - dependencies
+        - uptime_seconds
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, down]
+          description: Overall service status
+        version:
+          type: string
+          description: API version
+          example: "1.0.0"
+        dependencies:
+          type: object
+          description: Status of external dependencies
+          properties:
+            qdrant:
+              type: string
+              enum: [connected, disconnected, timeout, error]
+            openai:
+              type: string
+              enum: [connected, disconnected, timeout, error]
+            neon:
+              type: string
+              enum: [connected, disconnected, timeout, error]
+        uptime_seconds:
+          type: number
+          description: Service uptime in seconds
+          example: 3600
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          enum: [bad_request, rate_limited, service_error, service_unavailable]
+        message:
+          type: string
+          description: Human-readable error message
+        retry_after:
+          type: number
+          description: Seconds to wait before retrying (for rate limits)
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "bad_request"
+            message: "Question must be between 3 and 5000 characters"
+
+    RateLimited:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "rate_limited"
+            message: "Many people are asking questions right now. Please wait a moment."
+            retry_after: 30
+
+    ServiceError:
+      description: Internal service error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "service_error"
+            message: "An unexpected error occurred. Please try again."
+
+    ServiceUnavailable:
+      description: External service unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "service_unavailable"
+            message: "The chat service is temporarily unavailable. Your question has been queued."
+
+  securitySchemes:
+    # No authentication - anonymous sessions
+    AnonymousAccess:
+      type: apiKey
+      in: header
+      name: X-Session-ID
+      description: |
+        Optional session ID header for maintaining conversation context.
+        Auto-generated if not provided.
+
+security:
+  - AnonymousAccess: []

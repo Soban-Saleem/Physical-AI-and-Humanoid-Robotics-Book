@@ -15,6 +15,9 @@ const config = {
     v4: true,
   },
 
+  // Client modules for client-side execution
+  clientModules: [require.resolve('./src/chatbot/bootstrap.js')],
+
   // Production URL - GitHub Pages
   url: 'https://soban-saleem.github.io',
   baseUrl: '/Physical-AI-and-Humanoid-Robotics-Book/',
